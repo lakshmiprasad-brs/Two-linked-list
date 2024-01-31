@@ -1,65 +1,45 @@
 class ListNode {
-  constructor(value) {
-    this.val = value;
-    this.next = null;
+  constructor(value, next = null) {
+      this.value = value;
+      this.next = next;
   }
 }
 
-function getIntersectionNode(headA, headB) {
-  if (!headA || !headB) return null;
+function getIntersectionNode(head1, head2) {
+  let ptr1 = head1;
+  let ptr2 = head2;
 
-  let lenA = getLength(headA);
-  let lenB = getLength(headB);
-
-  let currA = headA;
-  let currB = headB;
-
-  // Move pointer of longer list by the difference in lengths
-  if (lenA > lenB) {
-    for (let i = 0; i < lenA - lenB; i++) {
-      currA = currA.next;
-    }
-  } else {
-    for (let i = 0; i < lenB - lenA; i++) {
-      currB = currB.next;
-    }
+  while (ptr1 !== ptr2) {
+      ptr1 = ptr1 ? ptr1.next : head2;
+      ptr2 = ptr2 ? ptr2.next : head1;
   }
 
-  // Traverse both lists in parallel until intersection or end is reached
-  while (currA && currB) {
-    if (currA === currB) {
-      return currA;
-    }
-    currA = currA.next;
-    currB = currB.next;
-  }
-
-  return null; // No intersection found
+  return ptr1;
 }
 
-function getLength(head) {
-  let length = 0;
-  let current = head;
-  while (current) {
-    length++;
-    current = current.next;
-  }
-  return length;
+function createLinkedListNodes(listId, nodes) {
+  const list = document.getElementById(listId);
+
+  nodes.forEach(value => {
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.textContent = value;
+      list.appendChild(node);
+  });
 }
 
 // Example usage:
-// Construct linked lists
-let list1 = new ListNode(4);
-list1.next = new ListNode(1);
-list1.next.next = new ListNode(8);
-list1.next.next.next = new ListNode(4);
-list1.next.next.next.next = new ListNode(5);
-list1.next.next.next.next.next = new ListNode(6);
+const list1 = new ListNode('A', new ListNode('B', new ListNode('C')));
+const list2 = new ListNode('X', new ListNode('Y', list1.next));
 
-let list2 = new ListNode(5);
-list2.next = new ListNode(6);
-list2.next.next = list1.next.next; // Intersection point
+const intersectionNode = getIntersectionNode(list1, list2);
 
-// Find intersection
-let intersectionNode = getIntersectionNode(list1, list2);
-console.log(intersectionNode ? intersectionNode.val : "No intersection");
+createLinkedListNodes('list1', ['A', 'B', 'C']);
+createLinkedListNodes('list2', ['X', 'Y']);
+
+// Highlight the intersection node
+if (intersectionNode) {
+  const intersectionNodeIndex = list1.next ? 2 : 0; // Assumes the intersection node is not the last node
+  const nodes = document.querySelectorAll('.linked-list:nth-child(1) .node');
+  nodes[intersectionNodeIndex].classList.add('intersection');
+}
